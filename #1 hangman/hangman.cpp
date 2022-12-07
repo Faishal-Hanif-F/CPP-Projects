@@ -1,11 +1,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
+
 
 class Hangman {
     private:
         int guesses{};
-        std::string letters_used{""};
+        std::unordered_map<std::string, int> letters_used;
         std::string the_word {"dimsum"};
         std::vector<std::string> progress {"?", "?", "?", "?", "?"};
 
@@ -55,15 +57,50 @@ class Hangman {
         {
             std::string input{};
             
+
+
             while (guesses < 6)
             {
                 std::cout << "guess a letter ->";
                 std::cin >> input;
                 std::cout << '\n';
+                
+                
+				// if input is equal the answer and hasn't been used, wins
+                if (input == the_word && !(letters_used.find(input) != letters_used.end()))
+                {
+                    std::cout << "As it turns out, your guess was RIGHT!\n";
+                    letters_used.insert( {input, guesses} );
+                    this->hangman_graphic(guesses);
+                    this->progressUpdater(input, the_word, progress);
+                    this->showLettersUsed(letters_used);
+                    break;
+                }
+                
+				
+
 
 
                 guesses += 1;
             }
+
+        }
+
+        void hangman_graphic(int guesses)
+        {
+
+        }
+
+        void progressUpdater(std::string input, 
+                             std::string the_word, 
+                             std::vector<std::string> progress)
+        {
+            std::cout << "Progress: ";
+        }
+
+        void showLettersUsed(std::unordered_map<std::string, int> letters_used)
+        {
+            std::cout << "Letter used: ";
 
         }
 
