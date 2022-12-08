@@ -11,17 +11,11 @@ class Hangman {
         // so we'll be using an unordered_map instead of just string
         std::unordered_map<std::string, int> letters_used;
         std::string the_word {"amogus"};
-        // progress contain each the_word letters
-        std::unordered_multimap<std::string, std::string> progress{};
 
     public:
         Hangman()
         {
-           std::string yes_or_no{};
-           
-
-           progress = turnTheWordIntoProgressBar(the_word);
-           
+           std::string yes_or_no{};  
 
         // if the user input isn't 1 or 2, keep asking.
            while ( yes_or_no != "1" && yes_or_no != "2" ) 
@@ -79,7 +73,7 @@ class Hangman {
                     letters_used.insert( {input, guesses} );
 
                     hangman_graphic(guesses);
-                    progressUpdater(input, the_word, progress);
+                    progressUpdater(input, the_word);
                     showLettersUsed(letters_used);
                     break;
                 } 
@@ -95,7 +89,7 @@ class Hangman {
                     letters_used.insert( {input, guesses} );
 
                     hangman_graphic(guesses);
-                    progressUpdater(input, the_word, progress);
+                    progressUpdater(input, the_word);
                     showLettersUsed(letters_used);
                 } 
                 // if input is already used, ask again
@@ -181,63 +175,50 @@ class Hangman {
         }
 
         void progressUpdater(std::string input, 
-                             std::string the_word, 
-                             std::unordered_multimap<std::string, std::string> progress)
+                             std::string the_word)
         {
+            std::vector<int> resultIndex;
+
+            std::string tempTarget{the_word};
+
+            for (int i = 0; i < input.size(); i++)
+            {
+                if(tempTarget.find(input[i]) != std::string::npos)
+                {
+                    std::size_t p{tempTarget.find(input[i])};
+                    resultIndex.push_back( p );
+                    
+                    tempTarget.replace(p, 1, ".");
+                }
+            }
+
             std::cout << "Progress: ";
-
-
+            for (int i = 0; i < the_word.size(); i++)
+            {
+                // if input letters is inside the_word
+                for (int j = 0; j < resultIndex.size(); j++)
+                {
+                    if(i == resultIndex[j])
+                    {
+                        std::cout << the_word[i] << " ";
+                        i++;
+                    }
+                }
+                if(i < the_word.size()) std::cout << "? ";
+            }
             std::cout << std::endl;
         }
 
         void showLettersUsed(std::unordered_map<std::string, int> letters_used)
         {
             std::cout << "Letter used: ";
-            
             for (auto i = letters_used.begin(); i != letters_used.end(); i++)
             {
                 std::cout << i->first << ", ";
             }
-
             std::cout << std::endl;
-            
         }
 
-        // since multimap is sorted, how about putting numbers or
-        // alphabet in front of the keys so it will be ordered correctly
-        // example:
-        // input "amogus"
-        // output key - value
-        // numerically
-        // 1a - "?", 2m - "?", 3o - "?",.... , 6s - "?"
-        // or
-        // alphabetically
-        // aa - "?", bm - "?", co - "?",.... , fs - "?"
-
-        // if the progress bar is wrongly ordered fix it here.
-        std::unordered_multimap<std::string, std::string> turnTheWordIntoProgressBar(std::string the_word)
-        {
-            std::unordered_multimap<std::string, std::string> result;
-            std::string questionMark {"?"};
-            std::string individualWords{};
-
-            for (int i = 0; i < the_word.size(); i++)
-            {
-                individualWords = the_word[i];
-                result.insert( {individualWords,  questionMark} );
-            }
-
-            for (auto i = progress.begin(); i != progress.end(); i++)
-            {
-                std::cout << i->first << " - ";
-            }
-
-            std::cout << std::endl;
-
-            std::cout << std::endl;
-
-            return result;
-        }
 
 };
 
