@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 
 
@@ -10,16 +11,21 @@ class Hangman {
         // unfortunately cpp isn't as magical as python
         // so we'll be using an unordered_map instead of just string
         std::unordered_map<std::string, int> letters_used;
-        std::string the_word {"amogus"};
+        std::string the_word {};
+        std::string hint     {};
 
     public:
         Hangman()
         {
-           std::string yes_or_no{};  
+            std::string yes_or_no{};  
 
-        // if the user input isn't 1 or 2, keep asking.
-           while ( yes_or_no != "1" && yes_or_no != "2" ) 
-           {
+            std::vector<std::string> the_wordAndHints { askUserTheWord() };
+            the_word = the_wordAndHints[0];
+            hint = the_wordAndHints[1];
+            
+            // if the user input isn't 1 or 2, keep asking.
+            while ( yes_or_no != "1" && yes_or_no != "2" ) 
+            {
                 std::cout << "Welcome to 'Hangman', are you ready to die?\n";
                 std::cout << "(1)Yes, for i am already dead.\n(2)No, get me outta here!\n"; 
                 std::cout << "->";
@@ -35,10 +41,7 @@ class Hangman {
                 {
                     std::cout << "cowards\n";
                 }
-
-           }
-            
-           
+            }
         }
         
         void startGame()
@@ -58,6 +61,9 @@ class Hangman {
         {
             std::string input{};
             
+            std::cout << "\nhints:\n" << hint << std::endl;
+            
+
             while (guesses < 6)
             {
                 std::cout << "guess a letter ->";
@@ -75,6 +81,9 @@ class Hangman {
                     hangman_graphic(guesses);
                     progressUpdater(input, the_word);
                     showLettersUsed(letters_used);
+                    
+                    std::cin.ignore();
+                    std::cin.get();
                     break;
                 } 
                 // input isn't the right answer and hasn't been used, guesses + 1  
@@ -219,6 +228,35 @@ class Hangman {
             std::cout << std::endl;
         }
 
+        std::vector<std::string> askUserTheWord()
+        {
+            std::cout << std::endl;
+            
+            std::string              hint     {};
+            std::string              line     {};
+            std::string              the_word {};
+            std::vector<std::string> result   {};
+
+            std::cout << "write the_word to be guessed\n";
+            std::cin  >> the_word;
+            result.push_back(the_word);
+            std::cin.ignore();
+
+            std::cout << "write hints about the_word" << std::endl;
+            while(true) 
+            {
+                std::getline(std::cin,line);
+                if (line == "quit") break;
+                hint.append(line+"\n");
+                std::cout << "write \"quit\" to stop writing hints\n";
+            }
+            hint[hint.size()-1]='\0';
+
+            result.push_back(hint);
+
+            return result;
+        }
+
 
 };
 
@@ -230,8 +268,3 @@ int main(){
 
     return 0;
 }
-
-
-
-
-
